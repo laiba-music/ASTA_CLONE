@@ -143,9 +143,8 @@ confirmer = {}
 # ------------------------------------------------------------------------
 
 STREAMI_PICS = [
-"https://files.catbox.moe/t4958d.mp4",
-"https://files.catbox.moe/ok8tat.mp4",
-
+"https://files.catbox.moe/jhucwc.mp4",
+"https://files.catbox.moe/znvojp.mp4",
 ]
 
 START_IMG_URL = getenv(
