@@ -1,9 +1,12 @@
 import asyncio
 import os
 import re
+import json
+from os import getenv
 from typing import Union
+from urllib.parse import urlparse, parse_qs
 
-import yt_dlp
+import httpx
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
 from youtubesearchpython.__future__ import VideosSearch
@@ -117,7 +120,6 @@ class YouTubeAPI:
         return thumbnail
 
     async def video(self, link: str, videoid: Union[bool, str] = None):
-        # Extract YouTube video ID
         if videoid:
             link = self.base + link
         if "&" in link:
@@ -129,7 +131,7 @@ class YouTubeAPI:
         elif url_data.hostname == "youtu.be":
             video_id = url_data.path[1:]
         else:
-            video_id = link  # fallback
+            video_id = link
 
         file_path = await get_file_from_api(video_id, audio=False)
         if file_path:
@@ -142,8 +144,6 @@ class YouTubeAPI:
             link = self.listbase + link
         if "&" in link:
             link = link.split("&")[0]
-        # This still uses shell/yt-dlp for playlist ID extraction. 
-        # If your API supports playlist extraction, replace this block with an API call.
         proc = await asyncio.create_subprocess_exec(
             "yt-dlp",
             "-i", "--get-id", "--flat-playlist",
@@ -181,7 +181,6 @@ class YouTubeAPI:
         return track_details, vidid
 
     async def formats(self, link: str, videoid: Union[bool, str] = None):
-        # This is still local yt-dlp. If your API supports formats, update here.
         import yt_dlp
         if videoid:
             link = self.base + link
@@ -247,7 +246,6 @@ class YouTubeAPI:
         format_id: Union[bool, str] = None,
         title: Union[bool, str] = None,
     ) -> str:
-        # Extract YouTube video ID
         if videoid:
             link = self.base + link
         if "&" in link:
@@ -259,12 +257,12 @@ class YouTubeAPI:
         elif url_data.hostname == "youtu.be":
             video_id = url_data.path[1:]
         else:
-            video_id = link  # fallback
+            video_id = link
 
         if songvideo:
             file_path = await get_file_from_api(video_id, audio=False)
             return file_path, True
-        elif songaudio or not video:  # Default to audio if not video
+        elif songaudio or not video:
             file_path = await get_file_from_api(video_id, audio=True)
             return file_path, True
         elif video:
